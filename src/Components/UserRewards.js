@@ -1,145 +1,109 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import './user-rewards.css';
-import data from './userData';
+import { useState, useEffect } from "react";
+import "./user-rewards.css";
+import axios from "axios";
 
-function UserRewards() {
-  const [loadedData, setloadedData] = useState({});
-  const [userRewards, setCalcRewards] = useState({});
-  const [userTransactions, setUserTransactions] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState("");
+const UserRewards = () => {
+  const [apiData, setApiData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setloadedData({ ...data });
-    setUsers([...Object.keys(data)]);
-
+    const fetchApi = async () => {
+        axios.get("http://localhost:4000/transactionData").then((res)=>{
+                setApiData(calculateRewardsPerCustomer(res.data));
+                setLoading(false);
+        }).catch((err)=>console.log(err))
+    };
+    fetchApi();
   }, []);
 
-  const userSelect = (value) => {
-      setCurrentUser(value);
-      let userData = loadedData[value];
-
-    let monthT = {
-      1: {
-        amounts: [],
-        rewards: 0,
-      },
-      2: {
-        amounts: [],
-        rewards: 0,
-      },
-      3: {
-        amounts: [],
-        rewards: 0,
-      },
-    };
-    for (let i = 0; i < userData.length; i++) {
-      let month = new Date(userData[i]['date']);
-
-      if (month.getMonth() + 1 == 1 || month.getMonth() + 1 == 2 || month.getMonth() + 1 == 3) {
-        monthT[month.getMonth() + 1]['amounts'].push(userData[i]['amount']);
-      }
+  //
+  const calculatePointsPerMonth = (amount) => {
+    let totalPoints = 0;
+    if (amount > 100) {
+      totalPoints =
+      totalPoints +
+        ((amount - 100) * 2 + 1 * 50);
     }
-    for (let key in monthT) {
-      let total_month_rewards = 0;
-      for (let i = 0; i < monthT[key]['amounts'].length; i++) {
-        let price = monthT[key]['amounts'][i];
-
-        total_month_rewards = total_month_rewards + calRew(price);
-      }
-      monthT[key]['rewards'] = total_month_rewards;
+    if (
+      amount > 50 &&
+      amount < 100
+    ) {
+      totalPoints = totalPoints + (amount - 50);
     }
-    setCalcRewards({ ...monthT });
-    setUserTransactions([...userData]);
+    
+    return totalPoints
+  }
+
+  //This function takes api results array and  calculates rewards per customer and returns an array of objects containing total rewards and rewards per month.
+  const calculateRewardsPerCustomer = (result) => {
+    return result.map((itm) => {
+      let totalRewards = 0;
+      let rewardsInJanuary = 0;
+      let rewardsInFebruary = 0;
+      let rewardsInMarch = 0;
+
+      //This loops through transaction array per customer
+      itm.transactions.forEach((transaction) => {
+        switch (true) {
+          //Calculates January rewards
+          case new Date(transaction.dateOfTransaction).getMonth() === 0:
+            rewardsInJanuary =  rewardsInJanuary + calculatePointsPerMonth(transaction.purchaseAmount)
+
+            break;
+          //Calculates February rewards
+          case new Date(transaction.dateOfTransaction).getMonth() === 1:
+            rewardsInFebruary =  rewardsInFebruary + calculatePointsPerMonth(transaction.purchaseAmount)
+            break;
+          // Calculates March rewards
+          case new Date(transaction.dateOfTransaction).getMonth() === 2:
+            rewardsInMarch =  rewardsInMarch + calculatePointsPerMonth(transaction.purchaseAmount)
+
+            break;
+          default:
+            break;
+        }
+      });
+      //Calculates total rewards per customer
+      totalRewards = rewardsInJanuary + rewardsInFebruary + rewardsInMarch;
+
+      return {
+        customerName: itm.customerName,
+        totalRewards,
+        rewardsInJanuary,
+        rewardsInFebruary,
+        rewardsInMarch,
+      };
+    });
   };
-
-
+ 
   return (
-    <div style={{
-      marginTop: "20px",
-      marginBottom: "50px",
-      fontSize: "20px",
-    }}>
-      <h2 style={{ textAlign: "center" }}>User Rewards Dashborad</h2>
-      <div className="select-style">
-        <select onChange={e => userSelect(e.target.value)} value={currentUser} >
-          <option value="" disabled>Select User</option>
-          {users.map((item, index) => {
-            return (
-              <option key={index} value={item}> {item.toUpperCase()} </option>
-            );
-          })}
-        </select>
-      </div>
-      {Object.keys(userRewards).length > 0 &&
-        <Fragment>
-          <table className="customers">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Rewards</th>
+    <div className="UserRewards">
+      {apiData.length > 0 && !loading ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Customer Name</th>
+              <th>Total Rewards</th>
+              <th>Rewards In January</th>
+              <th>Rewards In February</th>
+              <th>Rewards In March</th>
+            </tr>
+          </thead>
+          <tbody>
+            {apiData.map((itm, idx) => (
+              <tr key={idx} data-testid={`user-reward-${idx}`}>
+                <td>{itm.customerName}</td>
+                <td>{itm.totalRewards}</td>
+                <td>{itm.rewardsInJanuary}</td>
+                <td>{itm.rewardsInFebruary}</td>
+                <td>{itm.rewardsInMarch}</td>
               </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>First Month</td>
-                <td>{userRewards[1]["rewards"]}$</td>
-              </tr>
-              <tr>
-                <td>Second Month</td>
-                <td>{userRewards[2]["rewards"]}$</td>
-              </tr>
-              <tr>
-                <td>Third Month</td>
-                <td>{userRewards[3]["rewards"]}$</td>
-              </tr>
-              <tr>
-                <td>Total Reward</td>
-                <td>{userRewards[1]["rewards"] + userRewards[2]["rewards"] + userRewards[3]["rewards"]}$</td>
-              </tr>
-            </tbody>
-          </table>
-          <h4>User Transactions</h4>
-          {userTransactions.length > 0 ?
-            <table className="customers">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Rewards</th>
-                </tr>
-
-              </thead>
-              <tbody>
-                {userTransactions.map((item, index) => {
-                  return <tr key={index}>
-                    <td>{item["date"]}</td>
-                    <td>{item["amount"]}$</td>
-                    <td>{calRew(item["amount"])}$</td>
-                  </tr>
-                })}
-              </tbody>
-            </table>
-            : <div>No Transactions Found</div>}
-
-        </Fragment>
-      }
-
-
-    </ div >
+            ))}
+          </tbody>
+        </table>
+      ) : <p>...Loading</p>}
+    </div>
   );
-}
+};
 
 export default UserRewards;
-
-function calRew(price) {
-  let rewards = 0;
-  if (price > 100) {
-    rewards = (price - 100) * 2;
-  }
-  if (price > 50) {
-    rewards = rewards + ((price - 50) * 1);
-  }
-  return rewards;
-
-}
