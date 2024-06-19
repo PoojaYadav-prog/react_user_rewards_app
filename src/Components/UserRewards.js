@@ -93,10 +93,10 @@ const UserRewards = () => {
             {apiData.map((itm, idx) => (
               <tr key={idx} data-testid={`user-reward-${idx}`}>
                 <td>{itm.customerName}</td>
-                <td>{itm.totalRewards}</td>
-                <td>{itm.rewardsInJanuary}</td>
-                <td>{itm.rewardsInFebruary}</td>
-                <td>{itm.rewardsInMarch}</td>
+                <td>{itm.totalRewards} points</td>
+                <td>{itm.rewardsInJanuary} points</td>
+                <td>{itm.rewardsInFebruary} points</td>
+                <td>{itm.rewardsInMarch} points</td>
               </tr>
             ))}
           </tbody>
