@@ -1,9 +1,17 @@
+# Getting Started with react_user_rewards_app
+
 Pre-requisites : Visual studio Code with ReactJs version 18.3. Download source code and and run commands 
-"npm install"
-"npm run start" in terminal.
+### `npm install`
+### `npm start` in terminal.
  
-Run the project as ReactJs app.
-Execute command "npx json-server --watch transactions.json --port 4000". To start json server.
+Run the app in the development mode.\
+Open [https://localhost:3000] to view it in your browser.
+
+
+# To start json server.
+Execute command 
+### `npx json-server --watch transactions.json --port 4000` 
+
 
 Response :   {
       "customerId": 10,
