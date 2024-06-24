@@ -1,10 +1,10 @@
-import './App.css';
-import UserRewards from './Components/UserRewards';
+import "./App.css";
+import UserRewards from "./Components/UserRewards";
 
 function App() {
   return (
     <div className="App">
-      <UserRewards/>
+      <UserRewards />
     </div>
   );
 }

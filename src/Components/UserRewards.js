@@ -1,81 +1,104 @@
 import { useState, useEffect } from "react";
 import "./user-rewards.css";
-import axios from "axios";
+import { getTransactions } from "../Services/apiService";
 
 const UserRewards = () => {
   const [apiData, setApiData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchApi = async () => {
-        axios.get("http://localhost:4000/transactionData").then((res)=>{
-                setApiData(calculateRewardsPerCustomer(res.data));
-                setLoading(false);
-        }).catch((err)=>console.log(err))
-    };
-    fetchApi();
+    fetchTransactions();
   }, []);
 
-  //
+  const fetchTransactions = async () => {
+    try {
+      const data = await getTransactions();
+      setApiData(calculateRewardsPerCustomer(data));
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const calculatePointsPerMonth = (amount) => {
+    console.log(amount);
     let totalPoints = 0;
     if (amount > 100) {
-      totalPoints =
-      totalPoints +
-        ((amount - 100) * 2 + 1 * 50);
+      totalPoints = totalPoints + ((amount - 100) * 2 + 50);
     }
-    if (
-      amount > 50 &&
-      amount < 100
-    ) {
+    if (amount > 50 && amount < 100) {
       totalPoints = totalPoints + (amount - 50);
     }
-    
-    return totalPoints
-  }
 
-  //This function takes api results array and  calculates rewards per customer and returns an array of objects containing total rewards and rewards per month.
+    return totalPoints;
+  };
+
   const calculateRewardsPerCustomer = (result) => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const getMonthYearKey = (month, year) => `${year}-${month}`;
+
+    // Determine the last three months
+    const lastThreeMonths = [];
+    for (let i = 0; i < 3; i++) {
+      const month = currentMonth - i;
+      const year = currentYear - Math.floor((12 + month) / 12) + 1;
+      const adjustedMonth = (12 + month) % 12;
+      lastThreeMonths.push(getMonthYearKey(adjustedMonth, year));
+    }
+
     return result.map((itm) => {
       let totalRewards = 0;
-      let rewardsInJanuary = 0;
-      let rewardsInFebruary = 0;
-      let rewardsInMarch = 0;
+      let rewardsInFirstMonth = 0;
+      let rewardsInSecondMonth = 0;
+      let rewardsInThirdMonth = 0;
 
-      //This loops through transaction array per customer
+      // Loop through the transaction array per customer
       itm.transactions.forEach((transaction) => {
-        switch (true) {
-          //Calculates January rewards
-          case new Date(transaction.dateOfTransaction).getMonth() === 0:
-            rewardsInJanuary =  rewardsInJanuary + calculatePointsPerMonth(transaction.purchaseAmount)
+        const transactionDate = new Date(transaction.dateOfTransaction);
+        const transactionMonthYear = getMonthYearKey(
+          transactionDate.getMonth(),
+          transactionDate.getFullYear()
+        );
 
+        // Calculate rewards for transactions in the last three months
+        switch (transactionMonthYear) {
+          case lastThreeMonths[0]:
+            rewardsInFirstMonth += calculatePointsPerMonth(
+              transaction.purchaseAmount
+            );
             break;
-          //Calculates February rewards
-          case new Date(transaction.dateOfTransaction).getMonth() === 1:
-            rewardsInFebruary =  rewardsInFebruary + calculatePointsPerMonth(transaction.purchaseAmount)
+          case lastThreeMonths[1]:
+            rewardsInSecondMonth += calculatePointsPerMonth(
+              transaction.purchaseAmount
+            );
             break;
-          // Calculates March rewards
-          case new Date(transaction.dateOfTransaction).getMonth() === 2:
-            rewardsInMarch =  rewardsInMarch + calculatePointsPerMonth(transaction.purchaseAmount)
-
+          case lastThreeMonths[2]:
+            rewardsInThirdMonth += calculatePointsPerMonth(
+              transaction.purchaseAmount
+            );
             break;
           default:
             break;
         }
       });
-      //Calculates total rewards per customer
-      totalRewards = rewardsInJanuary + rewardsInFebruary + rewardsInMarch;
+
+      // Calculate total rewards per customer
+      totalRewards =
+        rewardsInFirstMonth + rewardsInSecondMonth + rewardsInThirdMonth;
 
       return {
         customerName: itm.customerName,
         totalRewards,
-        rewardsInJanuary,
-        rewardsInFebruary,
-        rewardsInMarch,
+        rewardsInFirstMonth,
+        rewardsInSecondMonth,
+        rewardsInThirdMonth,
       };
     });
   };
- 
+
   return (
     <div className="UserRewards">
       {apiData.length > 0 && !loading ? (
@@ -84,9 +107,9 @@ const UserRewards = () => {
             <tr>
               <th>Customer Name</th>
               <th>Total Rewards</th>
-              <th>Rewards In January</th>
-              <th>Rewards In February</th>
-              <th>Rewards In March</th>
+              <th>Rewards In 1st Month</th>
+              <th>Rewards In 2nd Month</th>
+              <th>Rewards In 3rd Month</th>
             </tr>
           </thead>
           <tbody>
@@ -94,14 +117,16 @@ const UserRewards = () => {
               <tr key={idx} data-testid={`user-reward-${idx}`}>
                 <td>{itm.customerName}</td>
                 <td>{itm.totalRewards} points</td>
-                <td>{itm.rewardsInJanuary} points</td>
-                <td>{itm.rewardsInFebruary} points</td>
-                <td>{itm.rewardsInMarch} points</td>
+                <td>{itm.rewardsInFirstMonth} points</td>
+                <td>{itm.rewardsInSecondMonth} points</td>
+                <td>{itm.rewardsInThirdMonth} points</td>
               </tr>
             ))}
           </tbody>
         </table>
-      ) : <p>...Loading</p>}
+      ) : (
+        <p>...Loading</p>
+      )}
     </div>
   );
 };

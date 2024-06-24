@@ -5,14 +5,19 @@
       "customerName": "James Brown",
       "transactions": [
         {
+          "transactionId": 98,
+          "purchaseAmount": 220,
+          "dateOfTransaction": "06/25/2024"
+        },
+        {
           "transactionId": 100,
-          "purchaseAmount": 120,
-          "dateOfTransaction": "01/04/2024"
+          "purchaseAmount": 520,
+          "dateOfTransaction": "05/29/2024"
         },
         {
           "transactionId": 101,
-          "purchaseAmount": 100,
-          "dateOfTransaction": "01/05/2024"
+          "purchaseAmount": 200,
+          "dateOfTransaction": "04/05/2024"
         }
       ]
     },
@@ -23,12 +28,12 @@
         {
           "transactionId": 102,
           "purchaseAmount": 50,
-          "dateOfTransaction": "01/04/2024"
+          "dateOfTransaction": "04/04/2024"
         },
         {
           "transactionId": 103,
           "purchaseAmount": 120,
-          "dateOfTransaction": "01/08/2024"
+          "dateOfTransaction": "05/08/2024"
         }
       ]
     },
@@ -39,14 +44,12 @@
         {
           "transactionId": 104,
           "purchaseAmount": 250,
-          "dateOfTransaction": "02/08/2024"
-       
+          "dateOfTransaction": "05/08/2024"
         },
         {
           "transactionId": 105,
-          "purchaseAmount": 60,
-          "dateOfTransaction": "03/08/2024"
-         
+          "purchaseAmount": 160,
+          "dateOfTransaction": "04/28/2024"
         }
       ]
     },
@@ -57,21 +60,19 @@
         {
           "transactionId": 106,
           "purchaseAmount": 200,
-          "dateOfTransaction": "01/08/2024"
-         
-          },
-          {
-              "transactionId": 107,
-              "purchaseAmount": 300,
-              "dateOfTransaction": "02/08/2024"
-          },
-          {
-              "transactionId": 108,
-              "purchaseAmount": 400,
-              "dateOfTransaction": "03/08/2024"
-          }
+          "dateOfTransaction": "06/01/2024"
+        },
+        {
+          "transactionId": 107,
+          "purchaseAmount": 300,
+          "dateOfTransaction": "06/10/2024"
+        },
+        {
+          "transactionId": 108,
+          "purchaseAmount": 400,
+          "dateOfTransaction": "04/18/2024"
+        }
       ]
     }
   ]
-  
 }
