@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import React from "react";
 import "./user-rewards.css";
 import { getTransactions } from "../Services/apiService";
 
@@ -20,19 +21,12 @@ const UserRewards = () => {
     }
   };
 
-  const calculatePointsPerMonth = (amount) => {
-    console.log(amount);
-    let totalPoints = 0;
-    if (amount > 100) {
-      totalPoints = totalPoints + ((amount - 100) * 2 + 50);
-    }
-    if (amount > 50 && amount < 100) {
-      totalPoints = totalPoints + (amount - 50);
-    }
-
-    return totalPoints;
+  const calculatePointsPerMonth = (purchaseAmount) => {
+    // Define the points calculation logic
+    if (purchaseAmount <= 50) return 0;
+    if (purchaseAmount <= 100) return purchaseAmount - 50;
+    return (purchaseAmount - 100) * 2 + 50;
   };
-
   const calculateRewardsPerCustomer = (result) => {
     const today = new Date();
     const currentMonth = today.getMonth();

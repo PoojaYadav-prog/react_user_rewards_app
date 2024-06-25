@@ -16,7 +16,7 @@
         },
         {
           "transactionId": 101,
-          "purchaseAmount": 200,
+          "purchaseAmount": 100,
           "dateOfTransaction": "04/05/2024"
         }
       ]

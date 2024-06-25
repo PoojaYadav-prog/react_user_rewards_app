@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-syntax-jsx": "^7.24.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
@@ -16,7 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --coverage",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -43,9 +44,9 @@
     "@testing-library/react": "^16.0.0",
     "axios-mock-adapter": "^1.22.0",
     "babel-jest": "^29.7.0",
+    "babel-plugin-transform-import-meta": "^2.2.1",
     "globals": "^15.6.0",
-    "jest": "^27.5.1",
-    "jest-axe": "^9.0.0"
+    "identity-obj-proxy": "^3.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -54,6 +55,9 @@
     "resetMocks": true,
     "transform": {
       "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
     }
   }
 }
