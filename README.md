@@ -18,7 +18,7 @@ Open [https://localhost:3000] to view it in your browser.
 
 Execute command
 
-### `npx json-server --watch transactions.json --port 4000`
+### `npx json-server --watch transaction.json --port 4000`
 
 Response : {
 "customerId": 10,
